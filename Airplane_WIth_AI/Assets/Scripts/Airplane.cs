@@ -11,11 +11,19 @@ public class Airplane : MonoBehaviour
     [SerializeField] private Transform front;
 
     [SerializeField] private float power = 0f;
-    [SerializeField] private float maxForce = 1000f;
+    [SerializeField] private float accelaration = 2f;
+    [SerializeField] private float maxForce_V = 100f;
+
     [SerializeField] private float angle = 15f;
     [SerializeField] private float maxAngle = 50f;
     [SerializeField] private float minAngle = -50f;
+
     [SerializeField] private float maxSpeed = 320f;
+
+    [SerializeField] private float currentHeight = 0;
+    [SerializeField] private float maxHeight = 18000;
+
+    [SerializeField] private float densityOfAir =100f;
 
     void Start()
     {
@@ -24,20 +32,25 @@ public class Airplane : MonoBehaviour
 
     void Update()
     {
-        if (rb.velocity.magnitude >= maxSpeed) return;
+        densityOfAir = Mathf.Clamp(100f * ((maxHeight - currentHeight) / maxHeight), 0, 100);
 
-        power = Mathf.Clamp(power+Input.GetAxis("Vertical"),-50f,100f);
+        
+
+        power = Mathf.Clamp(power + (accelaration * Input.GetAxis("Vertical")), -50f, 100f);
 
         var angleIncreation = Input.GetAxis("Horizontal");
         angle = Mathf.Clamp(angle + angleIncreation, -50f, 50f);
 
-        var direction = -centerOfMass.localPosition.DirectionTo(front.localPosition);
-        var fH = power * direction * maxForce;
-        var fT =  -fH * Mathf.Tan(angle * Mathf.Deg2Rad);
+        var direction = centerOfMass.position.DirectionTo(front.position);
+        var fH = power* maxForce_V *100* Vector3.left ;
+        var fV = Vector3.up * power * maxForce_V * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
 
-        Debug.Log(fT);
+        var fT = fH + fV;
+        //Debug.Log(fT);
         rb.AddForce(fT);
-        uiManager.Instance.SetText(rb.velocity.magnitude.ToString() );
-        
+
+        uiManager.Instance.SetText(0,rb.velocity.magnitude.ToString());
+        uiManager.Instance.SetText(1,currentHeight.ToString());
+        uiManager.Instance.SetText(2,power.ToString());
     }
 }

@@ -7,7 +7,9 @@ public class uiManager : MonoBehaviour
 {
     public static uiManager Instance;
 
-    private TextMeshProUGUI textMeshPro;
+    private TextMeshProUGUI speed;
+    private TextMeshProUGUI height;
+    private TextMeshProUGUI power;
 
     private void OnEnable()
     {
@@ -16,11 +18,18 @@ public class uiManager : MonoBehaviour
     }
     void Start()
     {
-        textMeshPro = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+        speed = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+        height = transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
+        power = transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>();
     }
 
-    public void SetText(string st)
+    public void SetText(int index ,string st)
     {
-        textMeshPro.SetText(st);
+        if(index == 0)
+            speed.SetText("Speed: " + st);
+        else if (index == 1)
+            height.SetText("Height: " + st);
+        else if (index == 2)
+            power.SetText("Power: " + st);
     }
 }
