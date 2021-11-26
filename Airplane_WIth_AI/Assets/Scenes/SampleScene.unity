@@ -229,7 +229,7 @@ MonoBehaviour:
   aBR: {fileID: 667072000}
   aBL: {fileID: 311002935}
   power: 0
-  accelaration: 2
+  accelaration: 0.5
   maxForce_V: 50
   angle: 15
   maxAngle: 50

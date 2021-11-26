@@ -37,27 +37,34 @@ public class Airplane : MonoBehaviour
     void Update()
     {
         //transform.Rotate(new Vector3(Input.GetAxis("Vertical"),0,0));
-        RotateOnX(Input.GetAxis("Vertical"));
-        RotateOnZ(Input.GetAxis("Horizontal"));
-        RotateAilerons(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
+        var vt = Input.GetAxis("Vertical");
+        var ht = Input.GetAxis("Horizontal");
 
-        CalculatePowerAndDensity();
+        RotateOnX(vt);
+        RotateOnZ(ht);
+        RotateAilerons(vt, ht);
 
-        var angleIncreation = Input.GetAxis("Horizontal");
-        angle = Mathf.Clamp(angle + angleIncreation, -50f, 50f);
+        CalculatePowerAndDensity(Input.GetAxis("Power"));
 
-        var direction = aFR.position.DirectionTo(aBR.GetChild(1).transform.position);
+        AddForce(ht);
 
+        uiManager.Instance.SetText(0,(Mathf.Round(rb.velocity.magnitude)).ToString());
+        uiManager.Instance.SetText(1,currentHeight.ToString());
+        uiManager.Instance.SetText(2,power.ToString());
+    }
+
+    private void AddForce(float ht)
+    {
+        angle = Mathf.Clamp(angle + ht, -50f, 50f);
+
+        var direction = -aBR.position.DirectionTo(aBR.GetChild(1).transform.position);
         var fH = power * maxForce_V * 100 * direction;
         var fV = Vector3.up * power * maxForce_V * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
 
         var fT = fH + fV;
         //Debug.Log(fT);
-        rb.AddForce(fH);
 
-        uiManager.Instance.SetText(0,rb.velocity.magnitude.ToString());
-        uiManager.Instance.SetText(1,currentHeight.ToString());
-        uiManager.Instance.SetText(2,power.ToString());
+        rb.AddForce(fH);
     }
 
     private void CalculatePowerAndDensity(float powerInput)
@@ -67,14 +74,19 @@ public class Airplane : MonoBehaviour
 
         power = Mathf.Clamp(power + (accelaration * powerInput), -50f, 100f);
     }
-
     private void RotateOnX(float value_V)
     {
-        transform.Rotate(new Vector3(value_V, 0, 0));
+        var angle = value_V * rb.velocity.magnitude;
+        angle = Mathf.Clamp(angle,-1,1);
+
+        transform.Rotate(new Vector3(-angle, 0, 0));
     }
     private void RotateOnZ(float value_H)
     {
-        transform.Rotate(new Vector3(0, 0, value_H));
+        var angle = value_H * rb.velocity.magnitude;
+        angle = Mathf.Clamp(angle, -1, 1);
+
+        transform.Rotate(new Vector3(0, 0, angle));
     }
     private void RotateAilerons(float value_V,float value_H)
     {
