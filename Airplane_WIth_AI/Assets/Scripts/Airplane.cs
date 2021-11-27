@@ -18,7 +18,7 @@ public class Airplane : MonoBehaviour
 
     [SerializeField] private float power = 0f;
     [SerializeField] private float accelaration = 0.05f;
-    [SerializeField] private float maxForce_V = 50f;
+    [SerializeField] private float maxForceOfEngine = 10000f;
 
     [SerializeField] private float angle = 15f;
     [SerializeField] private float maxAngle = 50f;
@@ -31,8 +31,8 @@ public class Airplane : MonoBehaviour
 
     [SerializeField] private float densityOfAir = 10f;
     [SerializeField] private float currentVelocity = 0f;
-    [SerializeField] private float cD = 0.2f;
-    [SerializeField] private float areaOfAirplane = 50f;
+    [SerializeField] private float cD = 0.05f;
+    [SerializeField] private Vector3 areaOfAirplane = new Vector3(50f, 200f, 100f);
 
     void Start()
     {
@@ -45,7 +45,7 @@ public class Airplane : MonoBehaviour
         currentHeight = transform.position.y;
         CalculatePowerAndDensity(Input.GetAxis("Power"));
 
-        var aR = CalculateAirDrag() * (-rb.velocity.normalized);
+        var aR = CalculateAirDrag(rb.velocity);
         print(rb.velocity);
         //transform.Rotate(new Vector3(Input.GetAxis("Vertical"),0,0));
         var vt = Input.GetAxis("Vertical");
@@ -65,23 +65,28 @@ public class Airplane : MonoBehaviour
         uiManager.Instance.SetText(2,power.ToString());
     }
 
-    private float CalculateAirDrag()
+    private Vector3 CalculateAirDrag(Vector3 velocity)
     {
-        var aR = cD * ((densityOfAir * currentVelocity * currentVelocity) / 2) * areaOfAirplane * maxForce_V;
-        return 0;
+        var direction = velocity.normalized * (-1);
+        var aRX = cD * ((densityOfAir * velocity.x * velocity.x) / 2) * areaOfAirplane.x ;
+        var aRY = cD * ((densityOfAir * velocity.y * velocity.y) / 2) * areaOfAirplane.y ;
+        var aRZ = cD * ((densityOfAir * velocity.z * velocity.z) / 2) * areaOfAirplane.z ;
+        var aR = new Vector3(aRX*direction.x, aRY* direction.y, aRZ* direction.z);
+        return aR;
     }
     private void AddForce(float ht,Vector3 aR )
     {
         angle = Mathf.Clamp(angle + ht, -50f, 50f);
 
         var direction = -transform.forward;
-        var fH = power * direction* maxForce_V*densityOfAir;
-        //var fV = Vector3.up * power * maxForce_V * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
+        var fH = power * direction* maxForceOfEngine*densityOfAir;
+        //var fV = Vector3.up * power * maxForceOfEngine * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
 
         //var fT = fH + fV;
         //Debug.Log(fT);
-        if(fH -aR != Vector3.zero || fH - aR != null)
-            rb.AddForce(fH-aR);
+        //print(fH + " -Horizontal ; Air drag- " + aR);
+        if (fH + aR != Vector3.zero || fH + aR != null)
+            rb.AddForce(fH+aR);
     }
     private void CalculatePowerAndDensity(float powerInput)
     {

@@ -205,7 +205,7 @@ Rigidbody:
   m_Mass: 22000
   m_Drag: 0.001
   m_AngularDrag: 0.05
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
@@ -231,7 +231,7 @@ MonoBehaviour:
   aBL: {fileID: 311002935}
   power: 0
   accelaration: 0.05
-  maxForce_V: 10000
+  maxForceOfEngine: 10000
   angle: 15
   maxAngle: 50
   minAngle: -50
@@ -240,7 +240,7 @@ MonoBehaviour:
   maxHeight: 18000
   densityOfAir: 10
   currentVelocity: 0
-  cD: 0.2
+  cD: 0.05
   areaOfAirplane: 50
 --- !u!1 &226102654
 GameObject:
@@ -2123,7 +2123,7 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &1928779380
 GameObject:
   m_ObjectHideFlags: 0
@@ -2277,7 +2277,7 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &1985930955
 GameObject:
   m_ObjectHideFlags: 0
@@ -2338,7 +2338,7 @@ WheelCollider:
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
     m_Stiffness: 1
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &2063354339
 GameObject:
   m_ObjectHideFlags: 0
