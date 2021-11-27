@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Transactions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +17,7 @@ public class Airplane : MonoBehaviour
     [SerializeField] private Transform aBL;
 
     [SerializeField] private float power = 0f;
-    [SerializeField] private float accelaration = 0.5f;
+    [SerializeField] private float accelaration = 0.05f;
     [SerializeField] private float maxForce_V = 50f;
 
     [SerializeField] private float angle = 15f;
@@ -25,17 +27,26 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float maxSpeed = 320f;
 
     [SerializeField] private float currentHeight = 0;
-    [SerializeField] private float maxHeight = 18000;
+    [SerializeField] private float maxHeight = 18000f;
 
-    [SerializeField] private float densityOfAir =100f;
+    [SerializeField] private float densityOfAir = 10f;
+    [SerializeField] private float currentVelocity = 0f;
+    [SerializeField] private float cD = 0.2f;
+    [SerializeField] private float areaOfAirplane = 50f;
 
     void Start()
     {
         //rb.centerOfMass = centerOfMass.position;
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        currentVelocity = Mathf.Round(rb.velocity.magnitude);
+        currentHeight = transform.position.y;
+        CalculatePowerAndDensity(Input.GetAxis("Power"));
+
+        var aR = CalculateAirDrag() * (-rb.velocity.normalized);
+        print(rb.velocity);
         //transform.Rotate(new Vector3(Input.GetAxis("Vertical"),0,0));
         var vt = Input.GetAxis("Vertical");
         var ht = Input.GetAxis("Horizontal");
@@ -44,35 +55,40 @@ public class Airplane : MonoBehaviour
         RotateOnZ(ht);
         RotateAilerons(vt, ht);
 
-        CalculatePowerAndDensity(Input.GetAxis("Power"));
 
-        AddForce(ht);
+        //print(ht + " -Horizontal ; Air drag- " + aR);
+        AddForce(ht,aR);
 
-        uiManager.Instance.SetText(0,(Mathf.Round(rb.velocity.magnitude)).ToString());
-        uiManager.Instance.SetText(1,currentHeight.ToString());
+
+        uiManager.Instance.SetText(0,(Mathf.Round(currentVelocity)).ToString());
+        uiManager.Instance.SetText(1, Mathf.Round(currentHeight).ToString());
         uiManager.Instance.SetText(2,power.ToString());
     }
 
-    private void AddForce(float ht)
+    private float CalculateAirDrag()
+    {
+        var aR = cD * ((densityOfAir * currentVelocity * currentVelocity) / 2) * areaOfAirplane * maxForce_V;
+        return 0;
+    }
+    private void AddForce(float ht,Vector3 aR )
     {
         angle = Mathf.Clamp(angle + ht, -50f, 50f);
 
-        var direction = -aBR.position.DirectionTo(aBR.GetChild(1).transform.position);
-        var fH = power * maxForce_V * 100 * direction;
-        var fV = Vector3.up * power * maxForce_V * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
+        var direction = -transform.forward;
+        var fH = power * direction* maxForce_V*densityOfAir;
+        //var fV = Vector3.up * power * maxForce_V * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
 
-        var fT = fH + fV;
+        //var fT = fH + fV;
         //Debug.Log(fT);
-
-        rb.AddForce(fH);
+        if(fH -aR != Vector3.zero || fH - aR != null)
+            rb.AddForce(fH-aR);
     }
-
     private void CalculatePowerAndDensity(float powerInput)
     {
 
-        densityOfAir = Mathf.Clamp(100f * ((maxHeight - currentHeight) / maxHeight), 0, 100);
+        densityOfAir = Mathf.Clamp(10f * ((maxHeight - currentHeight) / maxHeight), 0, 10);
 
-        power = Mathf.Clamp(power + (accelaration * powerInput), -50f, 100f);
+        power = Mathf.Clamp(power + (accelaration * powerInput), -5f, 10f);
     }
     private void RotateOnX(float value_V)
     {
