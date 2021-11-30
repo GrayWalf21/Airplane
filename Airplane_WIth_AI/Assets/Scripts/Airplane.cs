@@ -32,7 +32,7 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float densityOfAir = 10f;
     [SerializeField] private float currentVelocity = 0f;
     [SerializeField] private float cD = 0.05f;
-    [SerializeField] private Vector3 areaOfAirplane = new Vector3(50f, 200f, 100f);
+    [SerializeField] private Vector3 areaOfAirplane = new Vector3(50f, 1000f, 500f);
 
     void Start()
     {
@@ -46,17 +46,17 @@ public class Airplane : MonoBehaviour
         CalculatePowerAndDensity(Input.GetAxis("Power"));
 
         var aR = CalculateAirDrag(rb.velocity);
-        print(rb.velocity);
+        //print(rb.velocity);
         //transform.Rotate(new Vector3(Input.GetAxis("Vertical"),0,0));
         var vt = Input.GetAxis("Vertical");
         var ht = Input.GetAxis("Horizontal");
-
+        var pt = Input.GetAxis("Perpendicular");
         RotateOnX(vt);
+        RotateOnY(pt);
         RotateOnZ(ht);
-        RotateAilerons(vt, ht);
+        RotateAilerons(vt, ht, pt);
 
-
-        //print(ht + " -Horizontal ; Air drag- " + aR);
+        //print(transform.forward);
         AddForce(ht,aR);
 
 
@@ -68,9 +68,19 @@ public class Airplane : MonoBehaviour
     private Vector3 CalculateAirDrag(Vector3 velocity)
     {
         var direction = velocity.normalized * (-1);
-        var aRX = cD * ((densityOfAir * velocity.x * velocity.x) / 2) * areaOfAirplane.x ;
-        var aRY = cD * ((densityOfAir * velocity.y * velocity.y) / 2) * areaOfAirplane.y ;
-        var aRZ = cD * ((densityOfAir * velocity.z * velocity.z) / 2) * areaOfAirplane.z ;
+
+        var cAAX = areaOfAirplane.x * transform.forward.x + areaOfAirplane.y * transform.up.x + areaOfAirplane.z * transform.right.x;
+        var cAAY = areaOfAirplane.x * transform.forward.y + areaOfAirplane.y * transform.up.y + areaOfAirplane.z * transform.right.y;
+        var cAAZ = areaOfAirplane.x * transform.forward.z + areaOfAirplane.y * transform.up.y + areaOfAirplane.z * transform.right.z;
+
+        cAAX = Mathf.Abs(cAAX);
+        cAAY = Mathf.Abs(cAAY);
+        cAAZ = Mathf.Abs(cAAZ);
+
+        var aRX = cD * ((densityOfAir * velocity.x * velocity.x) / 2) * cAAX;
+        var aRY = cD * ((densityOfAir * velocity.y * velocity.y) / 2) * cAAY;
+        var aRZ = cD * ((densityOfAir * velocity.z * velocity.z) / 2) * cAAZ;
+
         var aR = new Vector3(aRX*direction.x, aRY* direction.y, aRZ* direction.z);
         return aR;
     }
@@ -79,14 +89,14 @@ public class Airplane : MonoBehaviour
         angle = Mathf.Clamp(angle + ht, -50f, 50f);
 
         var direction = -transform.forward;
-        var fH = power * direction* maxForceOfEngine*densityOfAir;
-        //var fV = Vector3.up * power * maxForceOfEngine * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir;
+        var fH = direction * power * maxForceOfEngine * densityOfAir;
+        var fV = transform.up * power * maxForceOfEngine * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir / 10;
 
         //var fT = fH + fV;
         //Debug.Log(fT);
-        //print(fH + " -Horizontal ; Air drag- " + aR);
-        if (fH + aR != Vector3.zero || fH + aR != null)
-            rb.AddForce(fH+aR);
+        print("Horizontal: "+fH +" Vertical: "+fV+" Air drag: " + aR);
+        if (fH + aR+ fV != Vector3.zero || fH + aR + fV != null)
+            rb.AddForce(fH + aR + fV);
     }
     private void CalculatePowerAndDensity(float powerInput)
     {
@@ -97,19 +107,41 @@ public class Airplane : MonoBehaviour
     }
     private void RotateOnX(float value_V)
     {
-        var angle = value_V * rb.velocity.magnitude;
+        var v = Mathf.Abs(
+               transform.forward.x * rb.velocity.x +
+               transform.forward.y * rb.velocity.y +
+               transform.forward.z * rb.velocity.z);
+
+        var angle = value_V * v / 100;
         angle = Mathf.Clamp(angle,-1,1);
 
-        transform.Rotate(new Vector3(-angle, 0, 0));
+        transform.Rotate(new Vector3(-angle, 0, 0), Space.Self);
+    }
+    private void RotateOnY(float value_P)
+    {
+        var v = Mathf.Abs(
+               transform.forward.x * rb.velocity.x +
+               transform.forward.y * rb.velocity.y +
+               transform.forward.z * rb.velocity.z);
+
+        var angle = value_P * v / 100;
+        angle = Mathf.Clamp(angle, -1, 1);
+
+        transform.Rotate(new Vector3(0, angle, 0), Space.Self);
     }
     private void RotateOnZ(float value_H)
     {
-        var angle = value_H * rb.velocity.magnitude;
+        var v = Mathf.Abs(
+               transform.forward.x * rb.velocity.x +
+               transform.forward.y * rb.velocity.y +
+               transform.forward.z * rb.velocity.z);
+
+        var angle = value_H * v / 100;
         angle = Mathf.Clamp(angle, -1, 1);
 
-        transform.Rotate(new Vector3(0, 0, angle));
+        transform.Rotate(new Vector3(0, 0, angle), Space.Self);
     }
-    private void RotateAilerons(float value_V,float value_H)
+    private void RotateAilerons(float value_V, float value_H, float value_P)
     {
         //print(aFR.localRotation.eulerAngles);
         aFR.Rotate(new Vector3(0, 0, -value_H), Space.Self);
