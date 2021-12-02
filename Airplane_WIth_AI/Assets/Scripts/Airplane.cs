@@ -5,12 +5,15 @@ using System.Transactions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using System.Net.NetworkInformation;
 
 public class Airplane : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Transform centerOfMass;
-    [SerializeField] private Transform front;
+    [SerializeField] private Transform forward;
+    [SerializeField] private Transform up;
     [SerializeField] private Transform aFR;
     [SerializeField] private Transform aFL;
     [SerializeField] private Transform aBR;
@@ -20,6 +23,7 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float accelaration = 0.05f;
     [SerializeField] private float maxForceOfEngine = 10000f;
 
+    [SerializeField] private float startAngle = 15f;
     [SerializeField] private float angle = 15f;
     [SerializeField] private float maxAngle = 50f;
     [SerializeField] private float minAngle = -50f;
@@ -32,11 +36,16 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float densityOfAir = 10f;
     [SerializeField] private float currentVelocity = 0f;
     [SerializeField] private float cD = 0.05f;
-    [SerializeField] private Vector3 areaOfAirplane = new Vector3(50f, 1000f, 500f);
+    [SerializeField] private Vector3 areaOfAirplane = new Vector3(5f, 15f, 10f);
+
+    private Arrow arrow;
+    private Vector3 lastForce;
 
     void Start()
     {
         //rb.centerOfMass = centerOfMass.position;
+        angle = startAngle;
+        arrow = gameObject.GetComponentInChildren<Arrow>();
     }
 
     void FixedUpdate()
@@ -46,11 +55,20 @@ public class Airplane : MonoBehaviour
         CalculatePowerAndDensity(Input.GetAxis("Power"));
 
         var aR = CalculateAirDrag(rb.velocity);
+
         //print(rb.velocity);
         //transform.Rotate(new Vector3(Input.GetAxis("Vertical"),0,0));
         var vt = Input.GetAxis("Vertical");
         var ht = Input.GetAxis("Horizontal");
         var pt = Input.GetAxis("Perpendicular");
+
+       /* if(ht == 0)
+            CorrectAileronH();
+        if(vt == 0)
+            CorrectAileronV();
+        if (pt == 0)
+            CorrectAileronP();*/
+
         RotateOnX(vt);
         RotateOnY(pt);
         RotateOnZ(ht);
@@ -59,10 +77,60 @@ public class Airplane : MonoBehaviour
         //print(transform.forward);
         AddForce(ht,aR);
 
+        if (Input.GetKey(KeyCode.Keypad0)) StopEngine();
+        if (Input.GetKey(KeyCode.T)) ClearEverything();
 
         uiManager.Instance.SetText(0,(Mathf.Round(currentVelocity)).ToString());
         uiManager.Instance.SetText(1, Mathf.Round(currentHeight).ToString());
         uiManager.Instance.SetText(2,power.ToString());
+        uiManager.Instance.SetText(3,Vector3.Distance(transform.position, arrow.airport.transform.position).ToString());
+    }
+
+    private void CorrectAileronP()
+    {
+        
+    }
+
+    private void CorrectAileronV()
+    {
+        angle = Mathf.LerpAngle(angle, startAngle, 0.001f);
+
+        var aBRE = aBR.localRotation.eulerAngles;
+        var aBLE = aBL.localRotation.eulerAngles;
+
+        aBRE.z = angle;
+        aBRE.z = Mathf.Clamp(aBRE.z, minAngle, maxAngle);
+        aBR.localRotation = Quaternion.Euler(aBRE);
+
+        aBLE.z = angle;
+        aBLE.z = Mathf.Clamp(aBLE.z, minAngle, maxAngle);
+        aBL.localRotation = Quaternion.Euler(aBLE);
+    }
+
+    private void CorrectAileronH()
+    {
+        
+    }
+
+    private void ClearEverything()
+    {
+        rb.velocity = Vector3.zero;
+        angle = 0f;
+    }
+
+    private void StopEngine()
+    {
+        power = 0;
+        var force = lastForce ;
+        var forceMode = ForceMode.Force;
+        StartCoroutine(GiveForceAfter( force, forceMode, 0.2f));
+    }
+
+    IEnumerator GiveForceAfter(Vector3 force, ForceMode forceMode, float time)
+    {
+        yield return new WaitForSeconds(time);
+        rb.AddForce(force, forceMode);
+        StopAllCoroutines();
     }
 
     private Vector3 CalculateAirDrag(Vector3 velocity)
@@ -86,17 +154,60 @@ public class Airplane : MonoBehaviour
     }
     private void AddForce(float ht,Vector3 aR )
     {
+
+        ForceMode forceMode = ForceMode.Impulse;
+
         angle = Mathf.Clamp(angle + ht, -50f, 50f);
 
-        var direction = -transform.forward;
-        var fH = direction * power * maxForceOfEngine * densityOfAir;
-        var fV = transform.up * power * maxForceOfEngine * Mathf.Tan(angle * Mathf.Deg2Rad) * densityOfAir / 10;
+        var directionH = -transform.position.DirectionTo(forward.position);
+        var directionV = -transform.position.DirectionTo(up.position);
+
+        /*var stH_X = directionH.x.ToString("0.00");
+        var stH_Y = directionH.y.ToString("0.00");
+        var stH_Z = directionH.z.ToString("0.00");
+
+        var stV_X = directionV.x.ToString("0.00");
+        var stV_Y = directionV.y.ToString("0.00");
+        var stV_Z = directionV.z.ToString("0.00");
+
+        var H_x = float.Parse(stH_X);
+        var H_y = float.Parse(stH_Y);
+        var H_z = float.Parse(stH_Z);
+
+        var V_x = float.Parse(stV_X);
+        var V_y = float.Parse(stV_Y);
+        var V_z = float.Parse(stV_Z);
+
+        directionH = new Vector3(H_x, H_y, H_z);
+        directionV = new Vector3(V_x, V_y, V_z);*/
+
+        //print(directionH + " " + directionV);
+
+        var vX = rb.velocity.x * directionH.x + rb.velocity.y * directionH.y + rb.velocity.z * directionH.z;
+        //print("X: " + direction.x + ",Y: " + direction.y + ",Z: " + direction.z);
+        //print("X: " + direction.x.ToString("0.00") + ",Y: " + direction.y.ToString("0.00") + ",Z: " + direction.z.ToString("0.00"));
+        //print("Direction: " + direction + ", Power: " + power + ", MaxForce: " + maxForceOfEngine + ", DensityofAir: " + densityOfAir);
+
+        var fH = directionH * power * maxForceOfEngine * densityOfAir ;
+        var fV = directionV * power * maxForceOfEngine * densityOfAir * Mathf.Abs(Mathf.Tan(angle * Mathf.Deg2Rad)) * vX /2000;
 
         //var fT = fH + fV;
         //Debug.Log(fT);
+        //print("Horizontal: "+fH +" Forward: "+ -transform.forward);
         print("Horizontal: "+fH +" Vertical: "+fV+" Air drag: " + aR);
+        if(power > 0.5f)
+        {
+            lastForce = fH + fV;
+        }
+        else
+        {
+            forceMode = ForceMode.Force;
+        }
+
         if (fH + aR+ fV != Vector3.zero || fH + aR + fV != null)
-            rb.AddForce(fH + aR + fV);
+            //rb.AddForce(fH+aR);
+            //rb.AddForce(fH,ForceMode.Impulse);
+            rb.AddForce(fH + aR + fV,forceMode);
     }
     private void CalculatePowerAndDensity(float powerInput)
     {
@@ -147,10 +258,13 @@ public class Airplane : MonoBehaviour
         aFR.Rotate(new Vector3(0, 0, -value_H), Space.Self);
         aFL.Rotate(new Vector3(0, 0, value_H), Space.Self);
 
-        aBR.Rotate(new Vector3(0, 0, value_V), Space.Self);
-        aBL.Rotate(new Vector3(0, 0, value_V), Space.Self);
+        /*aBR.Rotate(new Vector3(0, 0, value_V), Space.Self);
+        aBL.Rotate(new Vector3(0, 0, value_V), Space.Self);*/
 
-        LimitRotations();
+        aBR.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, value_V)));
+        aBL.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, value_V)));
+
+        //LimitRotations();
     }
     private void LimitRotations()
     {

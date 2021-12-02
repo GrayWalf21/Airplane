@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    [SerializeField] GameObject airport;
+    public GameObject airport;
     // Start is called before the first frame update
     void Start()
     {
