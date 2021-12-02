@@ -18,17 +18,19 @@ public class Airplane : MonoBehaviour
     [SerializeField] private Transform aFL;
     [SerializeField] private Transform aBR;
     [SerializeField] private Transform aBL;
+    [SerializeField] private Transform back_Aileron;
 
     [SerializeField] private float power = 0f;
     [SerializeField] private float accelaration = 0.05f;
-    [SerializeField] private float maxForceOfEngine = 10000f;
+    [SerializeField] private float maxForceOfEngine = 5000f;
 
     [SerializeField] private float startAngle = 15f;
+    [SerializeField] private float startAngle_BackAileron = 0f;
     [SerializeField] private float angle = 15f;
     [SerializeField] private float maxAngle = 50f;
     [SerializeField] private float minAngle = -50f;
 
-    [SerializeField] private float maxSpeed = 320f;
+    [SerializeField] private float maxSpeed = 600f;
 
     [SerializeField] private float currentHeight = 0;
     [SerializeField] private float maxHeight = 18000f;
@@ -36,16 +38,18 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float densityOfAir = 10f;
     [SerializeField] private float currentVelocity = 0f;
     [SerializeField] private float cD = 0.05f;
-    [SerializeField] private Vector3 areaOfAirplane = new Vector3(5f, 15f, 10f);
+    [SerializeField] private Vector3 areaOfAirplane = new Vector3(5f, 50f, 25f);
 
     private Arrow arrow;
     private Vector3 lastForce;
+    private WheelCollider wheelCollider;
 
     void Start()
     {
         //rb.centerOfMass = centerOfMass.position;
         angle = startAngle;
         arrow = gameObject.GetComponentInChildren<Arrow>();
+        wheelCollider = gameObject.GetComponentInChildren<WheelCollider>();
     }
 
     void FixedUpdate()
@@ -62,13 +66,6 @@ public class Airplane : MonoBehaviour
         var ht = Input.GetAxis("Horizontal");
         var pt = Input.GetAxis("Perpendicular");
 
-       /* if(ht == 0)
-            CorrectAileronH();
-        if(vt == 0)
-            CorrectAileronV();
-        if (pt == 0)
-            CorrectAileronP();*/
-
         RotateOnX(vt);
         RotateOnY(pt);
         RotateOnZ(ht);
@@ -79,6 +76,7 @@ public class Airplane : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Keypad0)) StopEngine();
         if (Input.GetKey(KeyCode.T)) ClearEverything();
+        if (Input.GetKey(KeyCode.F)) StartForce();
 
         uiManager.Instance.SetText(0,(Mathf.Round(currentVelocity)).ToString());
         uiManager.Instance.SetText(1, Mathf.Round(currentHeight).ToString());
@@ -86,32 +84,18 @@ public class Airplane : MonoBehaviour
         uiManager.Instance.SetText(3,Vector3.Distance(transform.position, arrow.airport.transform.position).ToString());
     }
 
-    private void CorrectAileronP()
+    private void StartForce()
     {
-        
+        wheelCollider.motorTorque = 5f;
+        StartCoroutine(StopTorque(0.2f));
     }
 
-    private void CorrectAileronV()
+    IEnumerator StopTorque(float time)
     {
-        angle = Mathf.LerpAngle(angle, startAngle, 0.001f);
-
-        var aBRE = aBR.localRotation.eulerAngles;
-        var aBLE = aBL.localRotation.eulerAngles;
-
-        aBRE.z = angle;
-        aBRE.z = Mathf.Clamp(aBRE.z, minAngle, maxAngle);
-        aBR.localRotation = Quaternion.Euler(aBRE);
-
-        aBLE.z = angle;
-        aBLE.z = Mathf.Clamp(aBLE.z, minAngle, maxAngle);
-        aBL.localRotation = Quaternion.Euler(aBLE);
+        yield return new WaitForSeconds(time);
+        wheelCollider.motorTorque = 0;
+        print("yesss");
     }
-
-    private void CorrectAileronH()
-    {
-        
-    }
-
     private void ClearEverything()
     {
         rb.velocity = Vector3.zero;
@@ -189,13 +173,13 @@ public class Airplane : MonoBehaviour
         //print("Direction: " + direction + ", Power: " + power + ", MaxForce: " + maxForceOfEngine + ", DensityofAir: " + densityOfAir);
 
         var fH = directionH * power * maxForceOfEngine * densityOfAir ;
-        var fV = directionV * power * maxForceOfEngine * densityOfAir * Mathf.Abs(Mathf.Tan(angle * Mathf.Deg2Rad)) * vX /2000;
+        var fV = directionV * power * maxForceOfEngine * densityOfAir * Mathf.Abs(Mathf.Tan(angle * Mathf.Deg2Rad)) * vX /8000;
 
         //var fT = fH + fV;
         //Debug.Log(fT);
         //print("Horizontal: "+fH +" Forward: "+ -transform.forward);
         print("Horizontal: "+fH +" Vertical: "+fV+" Air drag: " + aR);
-        if(power > 0.5f)
+        if(power > 1.5f)
         {
             lastForce = fH + fV;
         }
@@ -223,7 +207,7 @@ public class Airplane : MonoBehaviour
                transform.forward.y * rb.velocity.y +
                transform.forward.z * rb.velocity.z);
 
-        var angle = value_V * v / 100;
+        var angle = value_V * v / 500;
         angle = Mathf.Clamp(angle,-1,1);
 
         transform.Rotate(new Vector3(-angle, 0, 0), Space.Self);
@@ -235,7 +219,7 @@ public class Airplane : MonoBehaviour
                transform.forward.y * rb.velocity.y +
                transform.forward.z * rb.velocity.z);
 
-        var angle = value_P * v / 100;
+        var angle = value_P * v / 500;
         angle = Mathf.Clamp(angle, -1, 1);
 
         transform.Rotate(new Vector3(0, angle, 0), Space.Self);
@@ -247,7 +231,7 @@ public class Airplane : MonoBehaviour
                transform.forward.y * rb.velocity.y +
                transform.forward.z * rb.velocity.z);
 
-        var angle = value_H * v / 100;
+        var angle = value_H * v / 500;
         angle = Mathf.Clamp(angle, -1, 1);
 
         transform.Rotate(new Vector3(0, 0, angle), Space.Self);
@@ -255,18 +239,23 @@ public class Airplane : MonoBehaviour
     private void RotateAilerons(float value_V, float value_H, float value_P)
     {
         //print(aFR.localRotation.eulerAngles);
-        aFR.Rotate(new Vector3(0, 0, -value_H), Space.Self);
-        aFL.Rotate(new Vector3(0, 0, value_H), Space.Self);
+        aFR.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_H)));
+        aFL.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, value_H)));
+
+        /*aFR.Rotate(new Vector3(0, 0, -value_H), Space.Self);
+        aFL.Rotate(new Vector3(0, 0, value_H), Space.Self);*/
 
         /*aBR.Rotate(new Vector3(0, 0, value_V), Space.Self);
         aBL.Rotate(new Vector3(0, 0, value_V), Space.Self);*/
 
-        aBR.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, value_V)));
-        aBL.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, value_V)));
+        aBR.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_V)));
+        aBL.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_V)));
+
+        back_Aileron.localRotation = Quaternion.Euler(new Vector3(0, -Mathf.LerpUnclamped(startAngle_BackAileron, maxAngle, value_P), 0));
 
         //LimitRotations();
     }
-    private void LimitRotations()
+    /*private void LimitRotations()
     {
         var aFRE = aFR.localRotation.eulerAngles;
         var aFLE = aFL.localRotation.eulerAngles;
@@ -289,5 +278,5 @@ public class Airplane : MonoBehaviour
         aBLE.z = (aBLE.z > 180) ? aBLE.z - 360 : aBLE.z;
         aBLE.z = Mathf.Clamp(aBLE.z, minAngle, maxAngle);
         aBL.localRotation = Quaternion.Euler(aBLE);
-    }
+    }*/
 }
