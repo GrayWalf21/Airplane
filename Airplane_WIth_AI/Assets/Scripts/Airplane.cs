@@ -172,7 +172,7 @@ public class Airplane : MonoBehaviour
         //print("X: " + direction.x.ToString("0.00") + ",Y: " + direction.y.ToString("0.00") + ",Z: " + direction.z.ToString("0.00"));
         //print("Direction: " + direction + ", Power: " + power + ", MaxForce: " + maxForceOfEngine + ", DensityofAir: " + densityOfAir);
 
-        var fH = directionH * power * maxForceOfEngine * densityOfAir ;
+        var fH = directionH * power * maxForceOfEngine * densityOfAir;
         var fV = directionV * power * maxForceOfEngine * densityOfAir * Mathf.Abs(Mathf.Tan(angle * Mathf.Deg2Rad)) * vX /8000;
 
         //var fT = fH + fV;
@@ -187,6 +187,8 @@ public class Airplane : MonoBehaviour
         {
             forceMode = ForceMode.Force;
         }
+
+        fV = Vector3.zero;
 
         if (fH + aR+ fV != Vector3.zero || fH + aR + fV != null)
             //rb.AddForce(fH+aR);
