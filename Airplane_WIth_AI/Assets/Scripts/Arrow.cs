@@ -14,6 +14,6 @@ public class Arrow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.LookAt(airport.transform.position + new Vector3(0, 2, 0)); 
+        transform.LookAt(airport.transform.position + new Vector3(0, 2, 0));
     }
 }

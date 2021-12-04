@@ -9,6 +9,7 @@ public class uiManager : MonoBehaviour
 
     private TextMeshProUGUI speed;
     private TextMeshProUGUI height;
+    private TextMeshProUGUI height_CP;
     private TextMeshProUGUI power;
     private TextMeshProUGUI distance;
 
@@ -23,6 +24,7 @@ public class uiManager : MonoBehaviour
         height = transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>();
         power = transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>();
         distance = transform.GetChild(0).GetChild(3).GetComponent<TextMeshProUGUI>();
+        height_CP = transform.GetChild(0).GetChild(4).GetComponent<TextMeshProUGUI>();
     }
 
     public void SetText(int index ,string st)
@@ -33,7 +35,7 @@ public class uiManager : MonoBehaviour
                 speed.SetText("Speed: " + st);
                 break;
             case 1:
-                height.SetText("Height: " + st);
+                height.SetText("Height from sea level: " + st);
                 break;
             case 2:
                 power.SetText("Power: " + st);
@@ -41,6 +43,10 @@ public class uiManager : MonoBehaviour
             case 3:
                 distance.SetText("Distance: " + st);
                 break;
+            case 4:
+                height_CP.SetText("Height from Lanscape: " + st);
+                break;
+
         }
      
     }

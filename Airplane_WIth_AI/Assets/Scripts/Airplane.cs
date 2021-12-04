@@ -33,6 +33,7 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float maxSpeed = 600f;
 
     [SerializeField] private float currentHeight = 0;
+    [SerializeField] private float currentHeight_CP = 0;
     [SerializeField] private float maxHeight = 18000f;
 
     [SerializeField] private float densityOfAir = 10f;
@@ -43,6 +44,7 @@ public class Airplane : MonoBehaviour
     private Arrow arrow;
     private Vector3 lastForce;
     private WheelCollider wheelCollider;
+    private RaycastHit hit;
 
     void Start()
     {
@@ -57,6 +59,11 @@ public class Airplane : MonoBehaviour
         currentVelocity = Mathf.Round(rb.velocity.magnitude);
         currentHeight = transform.position.y;
         CalculatePowerAndDensity(Input.GetAxis("Power"));
+
+        if (Physics.Raycast(transform.position,Vector3.down,out hit))
+        {
+            currentHeight_CP = hit.distance;
+        }
 
         var aR = CalculateAirDrag(rb.velocity);
 
@@ -78,10 +85,13 @@ public class Airplane : MonoBehaviour
         if (Input.GetKey(KeyCode.T)) ClearEverything();
         if (Input.GetKey(KeyCode.F)) StartForce();
 
+        var disT = Vector3.Distance(transform.position, arrow.airport.transform.position);
+
         uiManager.Instance.SetText(0,(Mathf.Round(currentVelocity)).ToString());
         uiManager.Instance.SetText(1, Mathf.Round(currentHeight).ToString());
         uiManager.Instance.SetText(2,power.ToString());
-        uiManager.Instance.SetText(3,Vector3.Distance(transform.position, arrow.airport.transform.position).ToString());
+        uiManager.Instance.SetText(3, disT.ToString());
+        uiManager.Instance.SetText(4, currentHeight_CP.ToString());
     }
 
     private void StartForce()
@@ -94,7 +104,6 @@ public class Airplane : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         wheelCollider.motorTorque = 0;
-        print("yesss");
     }
     private void ClearEverything()
     {
