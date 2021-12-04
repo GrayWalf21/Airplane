@@ -62,7 +62,7 @@ public class Airplane : MonoBehaviour
 
         if (Physics.Raycast(transform.position,Vector3.down,out hit))
         {
-            currentHeight_CP = hit.distance;
+            currentHeight_CP = hit.distance - 2.80f;
         }
 
         var aR = CalculateAirDrag(rb.velocity);
@@ -91,7 +91,7 @@ public class Airplane : MonoBehaviour
         uiManager.Instance.SetText(1, Mathf.Round(currentHeight).ToString());
         uiManager.Instance.SetText(2,power.ToString());
         uiManager.Instance.SetText(3, disT.ToString());
-        uiManager.Instance.SetText(4, currentHeight_CP.ToString());
+        uiManager.Instance.SetText(4, currentHeight_CP.ToString("0."));
     }
 
     private void StartForce()
