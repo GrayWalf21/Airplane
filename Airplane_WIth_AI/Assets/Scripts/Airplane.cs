@@ -24,7 +24,7 @@ public class Airplane : MonoBehaviour
     [SerializeField] private float accelaration = 0.05f;
     [SerializeField] private float maxForceOfEngine = 5000f;
 
-    [SerializeField] private float startAngle = 15f;
+    [SerializeField] private float startAngle = 0f;
     [SerializeField] private float startAngle_BackAileron = 0f;
     [SerializeField] private float angle = 15f;
     [SerializeField] private float maxAngle = 50f;
@@ -178,10 +178,11 @@ public class Airplane : MonoBehaviour
         //var fT = fH + fV;
         //Debug.Log(fT);
         //print("Horizontal: "+fH +" Forward: "+ -transform.forward);
-        print("Horizontal: "+fH +" Vertical: "+fV+" Air drag: " + aR);
+        //print("Horizontal: "+fH +" Vertical: "+fV+" Air drag: " + aR);
         if(power > 1.5f)
         {
-            lastForce = fH + fV;
+            //lastForce = fH + fV;
+            lastForce = fH;
         }
         else
         {
@@ -241,8 +242,8 @@ public class Airplane : MonoBehaviour
     private void RotateAilerons(float value_V, float value_H, float value_P)
     {
         //print(aFR.localRotation.eulerAngles);
-        aFR.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_H)));
-        aFL.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, value_H)));
+        aFR.localRotation = Quaternion.Euler(new Vector3(Mathf.LerpUnclamped(startAngle, maxAngle, value_H), 0, 52.5f));
+        aFL.localRotation = Quaternion.Euler(new Vector3(Mathf.LerpUnclamped(startAngle, maxAngle, value_H), 0, -52.5f));
 
         /*aFR.Rotate(new Vector3(0, 0, -value_H), Space.Self);
         aFL.Rotate(new Vector3(0, 0, value_H), Space.Self);*/
@@ -250,10 +251,10 @@ public class Airplane : MonoBehaviour
         /*aBR.Rotate(new Vector3(0, 0, value_V), Space.Self);
         aBL.Rotate(new Vector3(0, 0, value_V), Space.Self);*/
 
-        aBR.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_V)));
-        aBL.localRotation = Quaternion.Euler(new Vector3(0, 0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_V)));
-
-        back_Aileron.localRotation = Quaternion.Euler(new Vector3(0, -Mathf.LerpUnclamped(startAngle_BackAileron, maxAngle, value_P), 0));
+        aBR.localRotation = Quaternion.Euler(new Vector3(0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_V), 0));
+        aBL.localRotation = Quaternion.Euler(new Vector3(0, Mathf.LerpUnclamped(startAngle, maxAngle, -value_V), 0));
+        
+        back_Aileron.localRotation = Quaternion.Euler(new Vector3(0, 28.2f, -Mathf.LerpUnclamped(startAngle_BackAileron, maxAngle, value_P)));
 
         //LimitRotations();
     }
