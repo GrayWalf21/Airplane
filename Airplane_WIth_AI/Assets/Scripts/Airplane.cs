@@ -130,9 +130,9 @@ public class Airplane : MonoBehaviour
     {
         var direction = velocity.normalized * (-1);
 
-        var cAAX = areaOfAirplane.x * transform.forward.x + areaOfAirplane.y * transform.up.x + areaOfAirplane.z * transform.right.x;
-        var cAAY = areaOfAirplane.x * transform.forward.y + areaOfAirplane.y * transform.up.y + areaOfAirplane.z * transform.right.y;
-        var cAAZ = areaOfAirplane.x * transform.forward.z + areaOfAirplane.y * transform.up.y + areaOfAirplane.z * transform.right.z;
+        var cAAX = areaOfAirplane.x * Mathf.Abs(transform.forward.x) + areaOfAirplane.y * Mathf.Abs(transform.up.x) + areaOfAirplane.z * Mathf.Abs(transform.right.x);
+        var cAAY = areaOfAirplane.x * Mathf.Abs(transform.forward.y) + areaOfAirplane.y * Mathf.Abs(transform.up.y) + areaOfAirplane.z * Mathf.Abs(transform.right.y);
+        var cAAZ = areaOfAirplane.x * Mathf.Abs(transform.forward.z) + areaOfAirplane.y * Mathf.Abs(transform.up.y) + areaOfAirplane.z * Mathf.Abs(transform.right.z);
 
         cAAX = Mathf.Abs(cAAX);
         cAAY = Mathf.Abs(cAAY);
