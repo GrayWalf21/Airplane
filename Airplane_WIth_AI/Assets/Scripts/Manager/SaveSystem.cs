@@ -19,44 +19,49 @@ public static class SaveSystem
         //StreamWriter stream = new StreamWriter(path);
         //PlayerData data = new PlayerData(player);
         var count = sample.sampleInputs.Count;
-        for (int i = 0; i < count; i++)
+
+        for (int i = -1; i < count; i++)
         {
             var line = "";
 
+            Debug.Log(FileManager.Instance.first);
             if (FileManager.Instance.first)
             {
-                FileManager.Instance.first = false;
                 line = count.ToString() + " " + "12" +" "+ "4";
-                file.WriteLine(line + Environment.NewLine);
+                file.WriteLine(line);
+                FileManager.Instance.first = false;
+                continue;
             }
+            else
+            {
+                //First 12th is input and last 4th is output
+                line =
 
-            //First 12th is input and last 4th is output
-            line =
+                sample.sampleInputs[i].currentPlace_X.ToString() + "\t" +
+                sample.sampleInputs[i].currentPlace_Y.ToString() + "\t" +
+                sample.sampleInputs[i].currentPlace_Z.ToString() + "\t" +
 
-            sample.sampleInputs[i].currentPlace_X.ToString()        + " " +
-            sample.sampleInputs[i].currentPlace_Y.ToString()        + " " +
-            sample.sampleInputs[i].currentPlace_Z.ToString()        + " " +
+                sample.sampleInputs[i].currentVelocity_X.ToString() + "\t" +
+                sample.sampleInputs[i].currentVelocity_Y.ToString() + "\t" +
+                sample.sampleInputs[i].currentVelocity_Z.ToString() + "\t" +
 
-            sample.sampleInputs[i].currentVelocity_X.ToString()     + " " +
-            sample.sampleInputs[i].currentVelocity_Y.ToString()     + " " +
-            sample.sampleInputs[i].currentVelocity_Z.ToString()     + " " +
+                sample.sampleInputs[i].runwayPlace_X.ToString() + "\t" +
+                sample.sampleInputs[i].runwayPlace_Y.ToString() + "\t" +
+                sample.sampleInputs[i].runwayPlace_Z.ToString() + "\t" +
 
-            sample.sampleInputs[i].runwayPlace_X.ToString()         + " " +
-            sample.sampleInputs[i].runwayPlace_Y.ToString()         + " " +
-            sample.sampleInputs[i].runwayPlace_Z.ToString()         + " " +
+                sample.sampleInputs[i].heightFrom_SeaLevel.ToString() + "\t" +
+                sample.sampleInputs[i].heightFrom_CP.ToString() + "\t" +
+                sample.sampleInputs[i].distanceFormRunway.ToString() + "\t" + "\t" +
 
-            sample.sampleInputs[i].heightFrom_SeaLevel.ToString()   + " " +
-            sample.sampleInputs[i].heightFrom_CP.ToString()         + " " +
-            sample.sampleInputs[i].distanceFormRunway.ToString()    + " " + " "+
+                sample.sampleOutputs[i].power.ToString() + "\t" +
+                sample.sampleOutputs[i].rotation_X.ToString() + "\t" +
+                sample.sampleOutputs[i].rotation_Y.ToString() + "\t" +
+                sample.sampleOutputs[i].rotation_Z.ToString();
 
-            sample.sampleOutputs[i].power.ToString()                + " " +
-            sample.sampleOutputs[i].rotation_X.ToString()           + " " +
-            sample.sampleOutputs[i].rotation_Y.ToString()           + " " +
-            sample.sampleOutputs[i].rotation_Z.ToString();
+                //File.WriteAllText(path, line+Environment.NewLine);
 
-            //File.WriteAllText(path, line+Environment.NewLine);
-
-            file.WriteLine(line+Environment.NewLine);
+                file.WriteLine(line);
+            }
         }
         file.Close();
         //formatter.Serialize(stream, sample);
