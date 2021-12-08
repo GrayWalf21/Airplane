@@ -45,6 +45,7 @@ public class Airplane : MonoBehaviour
     private Vector3 lastForce;
     private WheelCollider wheelCollider;
     private RaycastHit hit;
+    private Sample sample;
 
     void Start()
     {
@@ -52,6 +53,7 @@ public class Airplane : MonoBehaviour
         angle = startAngle;
         arrow = gameObject.GetComponentInChildren<Arrow>();
         wheelCollider = gameObject.GetComponentInChildren<WheelCollider>();
+        sample = new Sample();
     }
 
     void FixedUpdate()
@@ -73,9 +75,10 @@ public class Airplane : MonoBehaviour
         var ht = Input.GetAxis("Horizontal");
         var pt = Input.GetAxis("Perpendicular");
 
-        RotateOnX(vt);
-        RotateOnY(pt);
-        RotateOnZ(ht);
+        var angle_X = RotateOnX(vt);
+        var angle_Y = RotateOnY(pt);
+        var angle_Z = RotateOnZ(ht);
+
         RotateAilerons(vt, ht, pt);
 
         //print(transform.forward);
@@ -84,6 +87,7 @@ public class Airplane : MonoBehaviour
         if (Input.GetKey(KeyCode.Keypad0)) StopEngine();
         if (Input.GetKey(KeyCode.T)) ClearEverything();
         if (Input.GetKey(KeyCode.F)) StartForce();
+        if (Input.GetKey(KeyCode.F9)) FileManager.Instance.SavePlayerData();
 
         var disT = Vector3.Distance(transform.position, arrow.airport.transform.position);
 
@@ -92,6 +96,40 @@ public class Airplane : MonoBehaviour
         uiManager.Instance.SetText(2,power.ToString());
         uiManager.Instance.SetText(3, disT.ToString());
         uiManager.Instance.SetText(4, currentHeight_CP.ToString("0."));
+
+        WriteInputsAndOutputs(currentHeight, currentHeight_CP, disT, vt, pt, ht);
+        FileManager.Instance.sample = sample;
+    }
+
+    private void WriteInputsAndOutputs(float heightFrom_SeaLevel, float heightFrom_CP, float distanceFormRunway,float rotation_X,float rotation_Y, float rotation_Z)
+    {
+        InputOFANN input = new InputOFANN();
+        OutputOFANN output = new OutputOFANN();
+
+        input.currentPlace_X = transform.position.x;
+        input.currentPlace_Y = transform.position.y;
+        input.currentPlace_Z = transform.position.z;
+
+        input.currentVelocity_X = rb.velocity.x;
+        input.currentVelocity_Y = rb.velocity.y;
+        input.currentVelocity_Z = rb.velocity.z;
+
+        input.runwayPlace_X = arrow.airport.transform.position.x;
+        input.runwayPlace_Y = arrow.airport.transform.position.y;
+        input.runwayPlace_Z = arrow.airport.transform.position.z;
+
+        input.heightFrom_SeaLevel = heightFrom_SeaLevel;
+        input.heightFrom_CP = heightFrom_CP;
+        input.distanceFormRunway = distanceFormRunway;
+
+        output.power = power;
+        output.rotation_X = rotation_X;
+        output.rotation_Y = rotation_Y;
+        output.rotation_Z = rotation_Z;
+
+
+        sample.sampleInputs.Add(input);
+        sample.sampleOutputs.Add(output);
     }
 
     private void StartForce()
@@ -212,7 +250,7 @@ public class Airplane : MonoBehaviour
 
         power = Mathf.Clamp(power + (accelaration * powerInput), -5f, 10f);
     }
-    private void RotateOnX(float value_V)
+    private float RotateOnX(float value_V)
     {
         var v = Mathf.Abs(
                transform.forward.x * rb.velocity.x +
@@ -223,8 +261,9 @@ public class Airplane : MonoBehaviour
         angle = Mathf.Clamp(angle,-1,1);
 
         transform.Rotate(new Vector3(-angle, 0, 0), Space.Self);
+        return angle;
     }
-    private void RotateOnY(float value_P)
+    private float RotateOnY(float value_P)
     {
         var v = Mathf.Abs(
                transform.forward.x * rb.velocity.x +
@@ -235,8 +274,9 @@ public class Airplane : MonoBehaviour
         angle = Mathf.Clamp(angle, -1, 1);
 
         transform.Rotate(new Vector3(0, angle, 0), Space.Self);
+        return angle;
     }
-    private void RotateOnZ(float value_H)
+    private float RotateOnZ(float value_H)
     {
         var v = Mathf.Abs(
                transform.forward.x * rb.velocity.x +
@@ -247,6 +287,7 @@ public class Airplane : MonoBehaviour
         angle = Mathf.Clamp(angle, -1, 1);
 
         transform.Rotate(new Vector3(0, 0, angle), Space.Self);
+        return angle;
     }
     private void RotateAilerons(float value_V, float value_H, float value_P)
     {
