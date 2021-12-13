@@ -20,6 +20,10 @@ public class InputOFANN
     public float currentVelocity_Y;
     public float currentVelocity_Z;
 
+    public float currentRotation_X;
+    public float currentRotation_Y;
+    public float currentRotation_Z;
+
     public float runwayPlace_X;
     public float runwayPlace_Y;
     public float runwayPlace_Z;

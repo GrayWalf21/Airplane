@@ -45,7 +45,8 @@ public class Airplane : MonoBehaviour
     private Vector3 lastForce;
     private WheelCollider wheelCollider;
     private RaycastHit hit;
-    private Sample sample;
+    private bool canWrite = false;
+    [HideInInspector] public Sample sample;
 
     void Start()
     {
@@ -88,6 +89,7 @@ public class Airplane : MonoBehaviour
         if (Input.GetKey(KeyCode.T)) ClearEverything();
         if (Input.GetKey(KeyCode.F)) StartForce();
         if (Input.GetKey(KeyCode.F9)) FileManager.Instance.SavePlayerData();
+        if (Input.GetKey(KeyCode.F7)) canWrite = true;
 
         var disT = Vector3.Distance(transform.position, arrow.airport.transform.position);
 
@@ -97,8 +99,11 @@ public class Airplane : MonoBehaviour
         uiManager.Instance.SetText(3, disT.ToString());
         uiManager.Instance.SetText(4, currentHeight_CP.ToString("0."));
 
-        WriteInputsAndOutputs(currentHeight, currentHeight_CP, disT, vt, pt, ht);
-        FileManager.Instance.sample = sample;
+        if (canWrite)
+        {
+            WriteInputsAndOutputs(currentHeight, currentHeight_CP, disT, vt, pt, ht);
+            FileManager.Instance.sample = sample;
+        }
     }
 
     private void WriteInputsAndOutputs(float heightFrom_SeaLevel, float heightFrom_CP, float distanceFormRunway,float rotation_X,float rotation_Y, float rotation_Z)
@@ -113,6 +118,10 @@ public class Airplane : MonoBehaviour
         input.currentVelocity_X = rb.velocity.x;
         input.currentVelocity_Y = rb.velocity.y;
         input.currentVelocity_Z = rb.velocity.z;
+
+        input.currentRotation_X = transform.rotation.x;
+        input.currentRotation_Y = transform.rotation.y;
+        input.currentRotation_Z = transform.rotation.z;
 
         input.runwayPlace_X = arrow.airport.transform.position.x;
         input.runwayPlace_Y = arrow.airport.transform.position.y;

@@ -11,8 +11,9 @@ public static class SaveSystem
     public static void SaveData(Sample sample)
     {
         BinaryFormatter formatter = new BinaryFormatter();
+        var index = FileManager.Instance.index;  
 
-        string path = Application.streamingAssetsPath + "/Sample.txt";
+        string path = Application.streamingAssetsPath + "/Sample"+index.ToString()+".txt";
         //FileStream stream = new FileStream(path, FileMode.Create);
 
         var file = File.CreateText(path);
@@ -44,6 +45,10 @@ public static class SaveSystem
                 sample.sampleInputs[i].currentVelocity_X.ToString() + "\t" +
                 sample.sampleInputs[i].currentVelocity_Y.ToString() + "\t" +
                 sample.sampleInputs[i].currentVelocity_Z.ToString() + "\t" +
+
+                sample.sampleInputs[i].currentRotation_X.ToString() + "\t" +
+                sample.sampleInputs[i].currentRotation_Y.ToString() + "\t" +
+                sample.sampleInputs[i].currentRotation_Z.ToString() + "\t" +
 
                 sample.sampleInputs[i].runwayPlace_X.ToString() + "\t" +
                 sample.sampleInputs[i].runwayPlace_Y.ToString() + "\t" +
