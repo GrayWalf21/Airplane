@@ -28,7 +28,7 @@ public static class SaveSystem
             Debug.Log(FileManager.Instance.first);
             if (FileManager.Instance.first)
             {
-                line = count.ToString() + " " + "12" +" "+ "4";
+                line = count.ToString() + " " + "16" +" "+ "4";
                 file.WriteLine(line);
                 FileManager.Instance.first = false;
                 continue;
@@ -56,7 +56,9 @@ public static class SaveSystem
 
                 sample.sampleInputs[i].heightFrom_SeaLevel.ToString() + "\t" +
                 sample.sampleInputs[i].heightFrom_CP.ToString() + "\t" +
-                sample.sampleInputs[i].distanceFormRunway.ToString() + "\t" + "\t" +
+                sample.sampleInputs[i].distanceFormRunway.ToString() + "\t" + 
+                sample.sampleInputs[i].distanceF.ToString() + "\t" + 
+                //"\t" +
 
                 sample.sampleOutputs[i].power.ToString() + "\t" +
                 sample.sampleOutputs[i].rotation_X.ToString() + "\t" +

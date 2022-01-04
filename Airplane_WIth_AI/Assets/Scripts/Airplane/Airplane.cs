@@ -43,6 +43,7 @@ public class Airplane : MonoBehaviour
 
     private Arrow arrow;
     private Vector3 lastForce;
+    private float distanceF;
     private WheelCollider wheelCollider;
     private RaycastHit hit;
     private bool canWrite = false;
@@ -63,11 +64,21 @@ public class Airplane : MonoBehaviour
         currentHeight = transform.position.y;
         CalculatePowerAndDensity(Input.GetAxis("Power"));
 
-        if (Physics.Raycast(transform.position,Vector3.down,out hit))
+        if (Physics.Raycast(transform.position, -transform.forward, out hit,100000f))
+        {
+            distanceF = hit.distance;
+        }
+        else
+        {
+            distanceF = 100000f;
+        }
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit))
         {
             currentHeight_CP = hit.distance - 2.80f;
         }
 
+        //Debug.DrawRay(transform.position,-transform.forward * 100000f, Color.green);
         var aR = CalculateAirDrag(rb.velocity);
 
         //print(rb.velocity);
@@ -85,11 +96,26 @@ public class Airplane : MonoBehaviour
         //print(transform.forward);
         AddForce(ht,aR);
 
-        if (Input.GetKey(KeyCode.Keypad0)) StopEngine();
-        if (Input.GetKey(KeyCode.T)) ClearEverything();
-        if (Input.GetKey(KeyCode.F)) StartForce();
-        if (Input.GetKey(KeyCode.F9)) FileManager.Instance.SavePlayerData();
-        if (Input.GetKey(KeyCode.F7)) canWrite = true;
+        if (Input.GetKeyDown(KeyCode.Keypad0)) StopEngine();
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            PlayerPrefs.SetInt("Index", 0);
+            FileManager.Instance.index = 0;
+            print("index = 0");
+        }
+        if (Input.GetKeyDown(KeyCode.T)) ClearEverything();
+        if (Input.GetKeyDown(KeyCode.F)) StartForce();
+        if (Input.GetKeyDown(KeyCode.F9)) FileManager.Instance.SavePlayerData();
+        if (Input.GetKeyDown(KeyCode.F7) && !canWrite)
+        {
+            canWrite = true;
+            print("canWrite = true");
+        }
+        else if (Input.GetKeyDown(KeyCode.F7) && canWrite)
+        {
+            canWrite = false;
+            print("canWrite = false");
+        }
 
         var disT = Vector3.Distance(transform.position, arrow.airport.transform.position);
 
@@ -130,6 +156,7 @@ public class Airplane : MonoBehaviour
         input.heightFrom_SeaLevel = heightFrom_SeaLevel;
         input.heightFrom_CP = heightFrom_CP;
         input.distanceFormRunway = distanceFormRunway;
+        input.distanceF = distanceF;
 
         output.power = power;
         output.rotation_X = rotation_X;

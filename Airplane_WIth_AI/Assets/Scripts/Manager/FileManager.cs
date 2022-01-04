@@ -43,6 +43,7 @@ public class FileManager : MonoBehaviour
     }
     public void SavePlayerData()
     {
+        print("F9 Pressed Saving the Data");
         SaveSystem.SaveData(sample);
         print("Saved");
         sample = new Sample();

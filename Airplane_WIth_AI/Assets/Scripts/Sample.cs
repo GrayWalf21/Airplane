@@ -32,6 +32,7 @@ public class InputOFANN
     public float heightFrom_CP;
 
     public float distanceFormRunway;
+    public float distanceF;
 }
 
 [System.Serializable]
