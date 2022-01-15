@@ -97,6 +97,8 @@ public class Airplane : MonoBehaviour
             vt = (float) answer[1];
             pt = (float) answer[2];
             ht = (float) answer[3];
+
+            print(pw + " " + vt + " " + pt + " " + ht);
         }
 
         // CalculatePowerAndDensity(Input.GetAxis("Power"));
