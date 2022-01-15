@@ -11,6 +11,7 @@ public class FileManager : MonoBehaviour
 
     [HideInInspector] public bool first = true;
     [HideInInspector] public int index = 0;
+    [HideInInspector] public string[] output ;
 
     private Airplane airplane;
 
@@ -26,6 +27,7 @@ public class FileManager : MonoBehaviour
         }
         //print(contacts.transform.childCount+"asdasd asdasd asd as");
         sample = new Sample();
+        LoadPlayerData();
     }
     private void Start()
     {
@@ -54,9 +56,8 @@ public class FileManager : MonoBehaviour
     }
     public void LoadPlayerData()
     {
-        Sample data = SaveSystem.Loadata();
+        output = SaveSystem.Loadata();
 
-        sample = data;
         print("Load");
     }
 }

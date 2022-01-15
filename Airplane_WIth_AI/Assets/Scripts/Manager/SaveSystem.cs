@@ -75,7 +75,7 @@ public static class SaveSystem
         //formatter.Serialize(stream, sample);
         //stream.Close();
     }
-    public static Sample Loadata()
+    public static string[] Loadata()
     {
         string path = Application.streamingAssetsPath + "/Samplea.nw";
         if (File.Exists(path))
@@ -84,12 +84,16 @@ public static class SaveSystem
             //FileStream stream = new FileStream(path, FileMode.Open);
 
             //Sample data = formatter.Deserialize(stream) as Sample;
-            var file = File.ReadLines(path);
-            Debug.Log("Output 1 : " + file.ToString());
+           
+            var file = File.ReadAllLines(path);
+            var nf = file[1].Split(' ');
+            var ni = Convert.ToInt32(nf[0]);
+
+            Debug.Log("Output 1 : " + ni);
 
             //stream.Close();
 
-            return null;
+            return file;
         }
         else
         {
