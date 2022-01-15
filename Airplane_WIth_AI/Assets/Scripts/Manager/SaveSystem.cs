@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System;
+using System.Runtime.InteropServices;
 
 public static class SaveSystem
 {
@@ -76,16 +77,19 @@ public static class SaveSystem
     }
     public static Sample Loadata()
     {
-        string path = Application.streamingAssetsPath + "/Sample.txt";
+        string path = Application.streamingAssetsPath + "/Samplea.nw";
         if (File.Exists(path))
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //FileStream stream = new FileStream(path, FileMode.Open);
 
-            Sample data = formatter.Deserialize(stream) as Sample;
-            stream.Close();
+            //Sample data = formatter.Deserialize(stream) as Sample;
+            var file = File.ReadLines(path);
+            Debug.Log("Output 1 : " + file.ToString());
 
-            return data;
+            //stream.Close();
+
+            return null;
         }
         else
         {

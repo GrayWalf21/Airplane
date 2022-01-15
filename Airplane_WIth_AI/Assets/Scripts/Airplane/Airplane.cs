@@ -47,7 +47,14 @@ public class Airplane : MonoBehaviour
     private WheelCollider wheelCollider;
     private RaycastHit hit;
     private bool canWrite = false;
+
     [HideInInspector] public Sample sample;
+    [HideInInspector] public float[] currentInput;
+    [HideInInspector] public float pw = 0;
+    [HideInInspector] public float vt = 0;
+    [HideInInspector] public float ht = 0;
+    [HideInInspector] public float pt = 0;
+    [HideInInspector] public bool driveManually = true;
 
     void Start()
     {
@@ -62,7 +69,6 @@ public class Airplane : MonoBehaviour
     {
         currentVelocity = Mathf.Round(rb.velocity.magnitude);
         currentHeight = transform.position.y;
-        CalculatePowerAndDensity(Input.GetAxis("Power"));
 
         if (Physics.Raycast(transform.position, -transform.forward, out hit,100000f))
         {
@@ -78,14 +84,33 @@ public class Airplane : MonoBehaviour
             currentHeight_CP = hit.distance - 2.80f;
         }
 
+        var disT = Vector3.Distance(transform.position, arrow.airport.transform.position);
+
+        GetCurrentInput(currentHeight, currentHeight_CP, disT);
+
+        float[] answer = new float[4];
+
+        if (!driveManually)
+        {
+            answer = currentInput.GetOutput();
+            pw = answer[0];
+            vt = answer[1];
+            ht = answer[2];
+            pt = answer[3];
+        }
+
+        // CalculatePowerAndDensity(Input.GetAxis("Power"));
+        CalculatePowerAndDensity(pw);
+
         //Debug.DrawRay(transform.position,-transform.forward * 100000f, Color.green);
         var aR = CalculateAirDrag(rb.velocity);
 
         //print(rb.velocity);
         //transform.Rotate(new Vector3(Input.GetAxis("Vertical"),0,0));
-        var vt = Input.GetAxis("Vertical");
+
+        /*/var vt = Input.GetAxis("Vertical");
         var ht = Input.GetAxis("Horizontal");
-        var pt = Input.GetAxis("Perpendicular");
+        var pt = Input.GetAxis("Perpendicular");*/
 
         var angle_X = RotateOnX(vt);
         var angle_Y = RotateOnY(pt);
@@ -96,7 +121,7 @@ public class Airplane : MonoBehaviour
         //print(transform.forward);
         AddForce(ht,aR);
 
-        if (Input.GetKeyDown(KeyCode.Keypad0)) StopEngine();
+        /*/if (Input.GetKeyDown(KeyCode.Keypad0)) StopEngine();
         if (Input.GetKeyDown(KeyCode.F6))
         {
             PlayerPrefs.SetInt("Index", 0);
@@ -115,9 +140,8 @@ public class Airplane : MonoBehaviour
         {
             canWrite = false;
             print("canWrite = false");
-        }
+        }*/
 
-        var disT = Vector3.Distance(transform.position, arrow.airport.transform.position);
 
         uiManager.Instance.SetText(0,(Mathf.Round(currentVelocity)).ToString());
         uiManager.Instance.SetText(1, Mathf.Round(currentHeight).ToString());
@@ -130,6 +154,31 @@ public class Airplane : MonoBehaviour
             WriteInputsAndOutputs(currentHeight, currentHeight_CP, disT, vt, pt, ht);
             FileManager.Instance.sample = sample;
         }
+    }
+    private void GetCurrentInput(float heightFrom_SeaLevel, float heightFrom_CP, float distanceFormRunway)
+    {
+        currentInput = new float[16];
+
+        currentInput[0] = transform.position.x;
+        currentInput[1] = transform.position.y;
+        currentInput[2] = transform.position.z;
+
+        currentInput[3] = rb.velocity.x;
+        currentInput[4] = rb.velocity.y;
+        currentInput[5] = rb.velocity.z;
+
+        currentInput[6] = transform.rotation.x;
+        currentInput[7] = transform.rotation.y;
+        currentInput[8] = transform.rotation.z;
+
+        currentInput[9] =  arrow.airport.transform.position.x;
+        currentInput[10] = arrow.airport.transform.position.y;
+        currentInput[11] = arrow.airport.transform.position.z;
+
+        currentInput[12] = heightFrom_SeaLevel;
+        currentInput[13] = heightFrom_CP;
+        currentInput[14] = distanceFormRunway;
+        currentInput[15] = distanceF;
     }
 
     private void WriteInputsAndOutputs(float heightFrom_SeaLevel, float heightFrom_CP, float distanceFormRunway,float rotation_X,float rotation_Y, float rotation_Z)
@@ -168,7 +217,7 @@ public class Airplane : MonoBehaviour
         sample.sampleOutputs.Add(output);
     }
 
-    private void StartForce()
+    public void StartForce()
     {
         wheelCollider.motorTorque = 5f;
         StartCoroutine(StopTorque(0.2f));
@@ -179,13 +228,13 @@ public class Airplane : MonoBehaviour
         yield return new WaitForSeconds(time);
         wheelCollider.motorTorque = 0;
     }
-    private void ClearEverything()
+    public void ClearEverything()
     {
         rb.velocity = Vector3.zero;
         angle = 0f;
     }
 
-    private void StopEngine()
+    public void StopEngine()
     {
         power = 0;
         var force = lastForce ;
