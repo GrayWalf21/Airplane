@@ -17,44 +17,49 @@ public static class ANN
         var nO = Convert.ToInt32(nf[2]);
         Debug.Log(nI + " + " + nO + " + " +nH);
 
-        double[][] WCommand1 = new double[nH][];
-        double[][] WCommand2 = new double[nO][];
+        double[,] WCommand1 = new double[nH,nI+1];
+        double[,] WCommand2 = new double[nO,nH+1];
 
         int index = 2;
         int count = 0;
 
-        double[] act1 = new double[nI];
-        double[] act2 = new double[nI];
+        double[] act1 = new double[nH];
+        double[] act2 = new double[nH];
+
+        for(int i = 0; i< nI; i++)
+        {
+            act2[i] = (double) input[i];
+        }
 
         for (int i = 0; i < nH; i++) 
             for (int j = 0; j < nI+1; j++)
             {
-                WCommand1[i][j] = Convert.ToDouble(nw[index + count] );
+                WCommand1[i,j] = Convert.ToDouble(nw[index + count]);
                 count++;
             }
 
         for (int i = 0; i < nO; i++) 
             for (int j = 0; j < nH + 1; j++)
             {
-                WCommand2[i][j] = Convert.ToDouble(nw[index + count]);
+                WCommand2[i,j] = Convert.ToDouble(nw[index + count]);
                 count++;
             }
 
         for (int i = 0; i < nH; i++)
         {
-            act1[i] = WCommand1[i][nI];
+            act1[i] = WCommand1[i,nI];
 
             for (int j = 0; j < nI; j++) 
-                act1[i] += WCommand1[i][j] * act2[j];
+                act1[i] += WCommand1[i,j] * act2[j];
 
             act1[i] = sigmoid(act1[i]);
         }
         for (int i = 0; i < nO; i++)
         {
-            act2[i] = WCommand2[i][nH];
+            act2[i] = WCommand2[i,nH];
 
             for (int j = 0; j < nH; j++) 
-                act2[i] += WCommand2[i][j] * act1[j];
+                act2[i] += WCommand2[i,j] * act1[j];
 
             act2[i] = sigmoid(act2[i]);
         }
