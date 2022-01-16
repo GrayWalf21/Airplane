@@ -23,8 +23,8 @@ public static class ANN
         int index = 2;
         int count = 0;
 
-        double[] act1 = new double[nH];
-        double[] act2 = new double[nH];
+        double[] act1 = new double[nH + nI];
+        double[] act2 = new double[nH + nI];
 
         for(int i = 0; i< nI; i++)
         {

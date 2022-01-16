@@ -77,7 +77,7 @@ public static class SaveSystem
     }
     public static string[] Loadata()
     {
-        string path = Application.streamingAssetsPath + "/Samplea.nw";
+        string path = Application.streamingAssetsPath + "/recognition.nw";
         if (File.Exists(path))
         {
             //BinaryFormatter formatter = new BinaryFormatter();

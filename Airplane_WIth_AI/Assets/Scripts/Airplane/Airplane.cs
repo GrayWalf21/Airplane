@@ -88,10 +88,11 @@ public class Airplane : MonoBehaviour
 
         GetCurrentInput(currentHeight, currentHeight_CP, disT);
 
-        double[] answer = new double[5];
+        double[] answer = new double[11];
 
         if (!driveManually)
         {
+            currentInput = { }
             answer = currentInput.GetOutput(FileManager.Instance.output);
             pw = (float) answer[0];
             vt = (float) answer[1];
