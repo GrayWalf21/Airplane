@@ -94,23 +94,24 @@ public class Airplane : MonoBehaviour
         if (!driveManually)
         {
             /*currentInput = new float[24];
-            currentInput = new float[]{ 0 ,  0 ,  1 ,  0 ,  1 ,  1,   0,   0 ,  1  , 0 ,  0 ,  1  , 0 ,  0 ,  1 };
+            currentInput = new float[]{ 1 ,  1 ,  1 ,  1 ,  0 ,  1,   1,   1 ,  1  , 1 ,  0 ,  1  , 1 ,  1 ,  1 };
             float[] correctAnswer = new float[] { 0,0,0,0,0,0,0,0,0,1 };*/
             answer = currentInput.GetOutput(FileManager.Instance.output);
 
-            /*var max = Mathf.NegativeInfinity;
+            var max = Mathf.NegativeInfinity;
             var id = 0;
-            for(int i=0; i<10; i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (max < (float)answer[i]) 
+                if (max < (float)answer[i])
                 {
                     max = (float)answer[i];
                     id = i;
                 }
             }
 
-            print("id: " + id + " Max: " + max);*/
-            var max = Mathf.NegativeInfinity;
+            print("id: " + id + " Max: " + max);
+
+            /*var max = Mathf.NegativeInfinity;
             var max2 = Mathf.NegativeInfinity;
             var id = 0;
             var id2 = 0;
@@ -123,7 +124,7 @@ public class Airplane : MonoBehaviour
                     max = (float)answer[i];
                     id = i;
                 }
-            }
+            }*/
             /*if(id == 0) pw = (float) answer[0];
             else if(id == 1) vt = (float)answer[1];
             else if(id == 2) pt = (float)answer[2];
@@ -134,19 +135,27 @@ public class Airplane : MonoBehaviour
             else if(id2 == 2) pt = (float)answer[2];
             else if(id2 == 3) ht = (float)answer[3];*/
 
-            float pwO = 10f;
+            /*float pwO = 10f;
+            float vtO = 0.1f;
+            float ptO = 0.1f;
+            float htO = 0.1f;
 
-            pw = (float)answer[0];
-            if ((float)answer[1] > 0.5f) vt = (float)answer[1];
-            if ((float)answer[2] > 0.5f) pt = (float)answer[2];
-            if ((float)answer[3] > 0.5f) ht = (float)answer[3];
+            pw = (float)answer[0] * pwO;
+            vt = (float)answer[1] * vtO;
+            pt = (float)answer[2] * ptO;
+            ht = (float)answer[3] * htO;*/
+            /*
+                        pw = (float)answer[0];
+                        if ((float)answer[1] > 0.5f) vt = (float)answer[1];
+                        if ((float)answer[2] > 0.5f) pt = (float)answer[2];
+                        if ((float)answer[3] > 0.5f) ht = (float)answer[3];*/
 
             /*pw = (float)answer[0] * pwO;
             vt = (float)answer[1];
             pt = (float)answer[2];
             ht = (float)answer[3];*/
 
-            print(pw + " " + vt + " " + pt + " " + ht);
+            print(pw + " " + vt + " " + pt + " " + ht); 
         }
 
         // CalculatePowerAndDensity(Input.GetAxis("Power"));
