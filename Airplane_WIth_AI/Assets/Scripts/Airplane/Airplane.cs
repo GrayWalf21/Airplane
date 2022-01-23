@@ -261,17 +261,17 @@ public class Airplane : MonoBehaviour
         currentInput[12] = arrow.airport.transform.position.z / maxNormalizeValue;
 
         //change this
-        /*currentInput[13] = power/10;
+        currentInput[13] = power / 10;
 
         currentInput[14] = heightFrom_SeaLevel / maxNormalizeValue;
         currentInput[15] = heightFrom_CP / maxNormalizeValue;
         currentInput[16] = distanceFormRunway / maxNormalizeValue;
         currentInput[17] = distanceF / maxNormalizeValue;
-*/
-        currentInput[13] = heightFrom_SeaLevel / maxNormalizeValue;
+
+        /*currentInput[13] = heightFrom_SeaLevel / maxNormalizeValue;
         currentInput[14] = heightFrom_CP / maxNormalizeValue;
         currentInput[15] = distanceFormRunway / maxNormalizeValue;
-        currentInput[16] = distanceF / maxNormalizeValue;
+        currentInput[16] = distanceF / maxNormalizeValue;*/
 
     }
 
