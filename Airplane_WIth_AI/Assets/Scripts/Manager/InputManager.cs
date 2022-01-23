@@ -55,7 +55,7 @@ public class InputManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F7) && !canWrite)
         {
-            canWrite = true;
+            airplane.canWrite = true;
             print("canWrite = true");
         }
         else if (Input.GetKeyDown(KeyCode.F7) && canWrite)

@@ -29,7 +29,7 @@ public static class SaveSystem
             Debug.Log(FileManager.Instance.first);
             if (FileManager.Instance.first)
             {
-                line = count.ToString() + " " + "16" +" "+ "4";
+                line = count.ToString() + " " + "18" +" "+ "4";
                 file.WriteLine(line);
                 FileManager.Instance.first = false;
                 continue;
@@ -50,10 +50,13 @@ public static class SaveSystem
                 sample.sampleInputs[i].currentRotation_X.ToString() + "\t" +
                 sample.sampleInputs[i].currentRotation_Y.ToString() + "\t" +
                 sample.sampleInputs[i].currentRotation_Z.ToString() + "\t" +
+                sample.sampleInputs[i].currentRotation_W.ToString() + "\t" +
 
                 sample.sampleInputs[i].runwayPlace_X.ToString() + "\t" +
                 sample.sampleInputs[i].runwayPlace_Y.ToString() + "\t" +
                 sample.sampleInputs[i].runwayPlace_Z.ToString() + "\t" +
+
+                sample.sampleInputs[i].currentPower.ToString() + "\t" +
 
                 sample.sampleInputs[i].heightFrom_SeaLevel.ToString() + "\t" +
                 sample.sampleInputs[i].heightFrom_CP.ToString() + "\t" +
@@ -77,7 +80,7 @@ public static class SaveSystem
     }
     public static string[] Loadata()
     {
-        string path = Application.streamingAssetsPath + "/recognition.nw";
+        string path = Application.streamingAssetsPath + "/Samplea_1.nw";
         //string path = Application.streamingAssetsPath + "/Samplea_06.nw";
         if (File.Exists(path))
         {

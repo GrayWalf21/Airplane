@@ -23,10 +23,13 @@ public class InputOFANN
     public float currentRotation_X;
     public float currentRotation_Y;
     public float currentRotation_Z;
+    public float currentRotation_W;
 
     public float runwayPlace_X;
     public float runwayPlace_Y;
     public float runwayPlace_Z;
+
+    public float currentPower;
 
     public float heightFrom_SeaLevel;
     public float heightFrom_CP;

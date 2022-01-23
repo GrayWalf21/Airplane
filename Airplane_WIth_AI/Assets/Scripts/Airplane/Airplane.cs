@@ -44,10 +44,11 @@ public class Airplane : MonoBehaviour
     private Arrow arrow;
     private Vector3 lastForce;
     private float distanceF;
+    float maxNormalizeValue = 100000f;
     private WheelCollider wheelCollider;
     private RaycastHit hit;
-    private bool canWrite = false;
 
+    [HideInInspector]public bool canWrite = false;
     [HideInInspector] public Sample sample;
     [HideInInspector] public float[] currentInput;
     [HideInInspector] public float pw = 0;
@@ -96,9 +97,28 @@ public class Airplane : MonoBehaviour
             /*currentInput = new float[24];
             currentInput = new float[]{ 1 ,  1 ,  1 ,  1 ,  0 ,  1,   1,   1 ,  1  , 1 ,  0 ,  1  , 1 ,  1 ,  1 };
             float[] correctAnswer = new float[] { 0,0,0,0,0,0,0,0,0,1 };*/
+            /*currentInput = new float[16];
+            currentInput = new float[] { 
+                -0.859421053f,  
+                0.920139996f, 
+                0.646832135f, 
+                -0.629811331f, 
+                -0.230959606f,    
+                0.480253872f, 
+                0.016562038f, 
+                0.934004799f, 
+                0.039572232f, 
+                -1f,
+                0f,
+                0f,
+                0.920139996f, 
+                0.867507068f, 
+                0.886203568f, 
+                0.2975354f };*/
+
             answer = currentInput.GetOutput(FileManager.Instance.output);
 
-            var max = Mathf.NegativeInfinity;
+            /*var max = Mathf.NegativeInfinity;
             var id = 0;
             for (int i = 0; i < 10; i++)
             {
@@ -107,9 +127,9 @@ public class Airplane : MonoBehaviour
                     max = (float)answer[i];
                     id = i;
                 }
-            }
+            }*/
 
-            print("id: " + id + " Max: " + max);
+            //print("id: " + id + " Max: " + max);
 
             /*var max = Mathf.NegativeInfinity;
             var max2 = Mathf.NegativeInfinity;
@@ -135,27 +155,24 @@ public class Airplane : MonoBehaviour
             else if(id2 == 2) pt = (float)answer[2];
             else if(id2 == 3) ht = (float)answer[3];*/
 
-            /*float pwO = 10f;
-            float vtO = 0.1f;
-            float ptO = 0.1f;
-            float htO = 0.1f;
 
-            pw = (float)answer[0] * pwO;
-            vt = (float)answer[1] * vtO;
-            pt = (float)answer[2] * ptO;
-            ht = (float)answer[3] * htO;*/
+            /*power = (float)answer[0] * pwO;
+            vt = (float)answer[1] ;
+            pt = (float)answer[2] ;
+            ht = (float)answer[3] ;*/
             /*
                         pw = (float)answer[0];
                         if ((float)answer[1] > 0.5f) vt = (float)answer[1];
                         if ((float)answer[2] > 0.5f) pt = (float)answer[2];
                         if ((float)answer[3] > 0.5f) ht = (float)answer[3];*/
 
-            /*pw = (float)answer[0] * pwO;
+            pw = (float)answer[0];
             vt = (float)answer[1];
             pt = (float)answer[2];
-            ht = (float)answer[3];*/
+            ht = (float)answer[3];
 
-            print(pw + " " + vt + " " + pt + " " + ht); 
+            //print(answer[0] + " " + answer[1] + " " + answer[2] + " " + answer[3]); 
+            //print(pw + " " + vt + " " + pt + " " + ht); 
         }
 
         // CalculatePowerAndDensity(Input.GetAxis("Power"));
@@ -217,47 +234,45 @@ public class Airplane : MonoBehaviour
     }
     private void GetCurrentInput(float heightFrom_SeaLevel, float heightFrom_CP, float distanceFormRunway)
     {
-        float cpX = 36360.85f;                      
-        float cpY = 8225.081f;
-        float cpZ = 20170.21f;
+        currentInput = new float[18];
 
-        float cvX = 282.7596f;
-        float cvY = 276.7364f;
-        float cvZ = 273.1143f;
+        currentInput[0] = transform.position.x / maxNormalizeValue;
+        currentInput[1] = transform.position.y / maxNormalizeValue;
+        currentInput[2] = transform.position.z / maxNormalizeValue;
 
-        float rX = 0.9350824f;
-        float rY = 0.9993166f;
-        float rZ = 0.8446074f;
+        currentInput[3] = rb.velocity.x / maxNormalizeValue;
+        currentInput[4] = rb.velocity.y / maxNormalizeValue;
+        currentInput[5] = rb.velocity.z / maxNormalizeValue;
 
-        float apX = 1476f;
+        /*print(
+            transform.rotation.x.ToString("0.00") + " " + 
+            transform.rotation.y.ToString("0.00") + " "+ 
+            transform.rotation.z.ToString("0.00") + " " + 
+            transform.rotation.w.ToString("0.00")
+            );*/
+        
+        currentInput[6] = transform.rotation.x;
+        currentInput[7] = transform.rotation.y;
+        currentInput[8] = transform.rotation.z;
+        currentInput[9] = transform.rotation.w;
 
-        float hfS = 8225.081f;
-        float hfL = 7768.037f;
-        float dR = 37661.55f;
-        float dF = 100000f;
+        currentInput[10] =  arrow.airport.transform.position.x / maxNormalizeValue;
+        currentInput[11] = arrow.airport.transform.position.y / maxNormalizeValue;
+        currentInput[12] = arrow.airport.transform.position.z / maxNormalizeValue;
 
-        currentInput = new float[16];
+        //change this
+        /*currentInput[13] = power/10;
 
-        currentInput[0] = transform.position.x / cpX;
-        currentInput[1] = transform.position.y / cpY;
-        currentInput[2] = transform.position.z / cpZ;
+        currentInput[14] = heightFrom_SeaLevel / maxNormalizeValue;
+        currentInput[15] = heightFrom_CP / maxNormalizeValue;
+        currentInput[16] = distanceFormRunway / maxNormalizeValue;
+        currentInput[17] = distanceF / maxNormalizeValue;
+*/
+        currentInput[13] = heightFrom_SeaLevel / maxNormalizeValue;
+        currentInput[14] = heightFrom_CP / maxNormalizeValue;
+        currentInput[15] = distanceFormRunway / maxNormalizeValue;
+        currentInput[16] = distanceF / maxNormalizeValue;
 
-        currentInput[3] = rb.velocity.x / cvX;
-        currentInput[4] = rb.velocity.y / cvY;
-        currentInput[5] = rb.velocity.z / cvZ;
-
-        currentInput[6] = transform.rotation.x / rX;
-        currentInput[7] = transform.rotation.y / rY;
-        currentInput[8] = transform.rotation.z / rZ;
-
-        currentInput[9] =  arrow.airport.transform.position.x / apX;
-        currentInput[10] = arrow.airport.transform.position.y;
-        currentInput[11] = arrow.airport.transform.position.z;
-
-        currentInput[12] = heightFrom_SeaLevel / hfS;
-        currentInput[13] = heightFrom_CP / hfL;
-        currentInput[14] = distanceFormRunway / dR;
-        currentInput[15] = distanceF / dF;
     }
 
     private void WriteInputsAndOutputs(float heightFrom_SeaLevel, float heightFrom_CP, float distanceFormRunway,float rotation_X,float rotation_Y, float rotation_Z)
@@ -265,28 +280,31 @@ public class Airplane : MonoBehaviour
         InputOFANN input = new InputOFANN();
         OutputOFANN output = new OutputOFANN();
 
-        input.currentPlace_X = transform.position.x;
-        input.currentPlace_Y = transform.position.y;
-        input.currentPlace_Z = transform.position.z;
+        input.currentPlace_X = transform.position.x / maxNormalizeValue;
+        input.currentPlace_Y = transform.position.y / maxNormalizeValue;
+        input.currentPlace_Z = transform.position.z / maxNormalizeValue;
 
-        input.currentVelocity_X = rb.velocity.x;
-        input.currentVelocity_Y = rb.velocity.y;
-        input.currentVelocity_Z = rb.velocity.z;
+        input.currentVelocity_X = rb.velocity.x / maxNormalizeValue;
+        input.currentVelocity_Y = rb.velocity.y / maxNormalizeValue;
+        input.currentVelocity_Z = rb.velocity.z / maxNormalizeValue;
 
         input.currentRotation_X = transform.rotation.x;
         input.currentRotation_Y = transform.rotation.y;
         input.currentRotation_Z = transform.rotation.z;
+        input.currentRotation_W = transform.rotation.w;
 
-        input.runwayPlace_X = arrow.airport.transform.position.x;
-        input.runwayPlace_Y = arrow.airport.transform.position.y;
-        input.runwayPlace_Z = arrow.airport.transform.position.z;
+        input.runwayPlace_X = arrow.airport.transform.position.x / maxNormalizeValue;
+        input.runwayPlace_Y = arrow.airport.transform.position.y / maxNormalizeValue;
+        input.runwayPlace_Z = arrow.airport.transform.position.z / maxNormalizeValue;
 
-        input.heightFrom_SeaLevel = heightFrom_SeaLevel;
-        input.heightFrom_CP = heightFrom_CP;
-        input.distanceFormRunway = distanceFormRunway;
-        input.distanceF = distanceF;
+        input.currentPower = power / 10;
 
-        output.power = power;
+        input.heightFrom_SeaLevel = heightFrom_SeaLevel / maxNormalizeValue;
+        input.heightFrom_CP = heightFrom_CP / maxNormalizeValue;
+        input.distanceFormRunway = distanceFormRunway / maxNormalizeValue;
+        input.distanceF = distanceF / maxNormalizeValue;
+
+        output.power = pw;
         output.rotation_X = rotation_X;
         output.rotation_Y = rotation_Y;
         output.rotation_Z = rotation_Z;
