@@ -80,7 +80,7 @@ public static class SaveSystem
     }
     public static string[] Loadata()
     {
-        string path = Application.streamingAssetsPath + "/Samplea_WPNNew.nw";
+        string path = Application.streamingAssetsPath + "/Samplea_001.nw";
         //string path = Application.streamingAssetsPath + "/Samplea_06.nw";
         if (File.Exists(path))
         {

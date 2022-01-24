@@ -165,11 +165,18 @@ public class Airplane : MonoBehaviour
                         if ((float)answer[1] > 0.5f) vt = (float)answer[1];
                         if ((float)answer[2] > 0.5f) pt = (float)answer[2];
                         if ((float)answer[3] > 0.5f) ht = (float)answer[3];*/
-
-            pw = (float)answer[0];
-            vt = (float)answer[1];
-            pt = (float)answer[2];
-            ht = (float)answer[3];
+            if ((float)answer[0] > 0.1f)
+                pw = (float)answer[0];
+            else pw = 0;
+            if ((float)answer[1] > 0.1f)
+                vt = (float)answer[1];
+            else vt = 0;
+            if ((float)answer[2] > 0.1f)
+                pt = (float)answer[2];
+            else pt = 0;
+            if ((float)answer[3] > 0.1f)
+                ht = (float)answer[3];
+            else ht = 0;
 
             //print(answer[0] + " " + answer[1] + " " + answer[2] + " " + answer[3]); 
             //print(pw + " " + vt + " " + pt + " " + ht); 
